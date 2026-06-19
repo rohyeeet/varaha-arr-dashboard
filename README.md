@@ -5,9 +5,14 @@ Connects directly to BigQuery and refreshes automatically — no manual exports 
 
 **Live dashboard →** https://varaha-arr-dashboard.streamlit.app
 
+<img width="1430" height="785" alt="image" src="https://github.com/user-attachments/assets/4d763bb8-e4fb-473e-9f8a-784ee10d2be6" />
+
 ---
 
 ## What it shows
+
+<img width="1411" height="858" alt="image" src="https://github.com/user-attachments/assets/960720a1-4ea1-4125-bba7-9bf942b2ddd4" />
+
 
 | Section | What you get |
 |---|---|
@@ -19,6 +24,10 @@ Connects directly to BigQuery and refreshes automatically — no manual exports 
 | **Crashes** | Crashlytics breakdown by category, daily trend, fatal vs non-fatal, issue detail |
 
 A **date-range picker** (default: last 7 days) controls every chart. Quick-select presets: 7d / 30d / 90d.
+
+<img width="1404" height="869" alt="image" src="https://github.com/user-attachments/assets/467aceb1-b5ad-4ea0-a3eb-a4069637c33b" />
+
+<img width="1387" height="855" alt="image" src="https://github.com/user-attachments/assets/f9c85518-21f9-48dd-9c24-8a493d87d7fa" />
 
 ---
 
@@ -61,12 +70,16 @@ A **date-range picker** (default: last 7 days) controls every chart. Quick-selec
 
 ### Data flow details
 
+<img width="1380" height="885" alt="image" src="https://github.com/user-attachments/assets/bc7fa386-0203-4af3-b3a5-cc5abf7c3317" />
+
 1. Firebase SDK fires events on the Android device.
 2. GA4 exports a new `events_YYYYMMDD` table to BigQuery each day (plus intraday tables during the day).
 3. Crashlytics writes to a single partitioned table (`com_varaha_arrapp_ANDROID`) — not sharded.
 4. The Streamlit app queries BigQuery on page load; results are cached for 30 minutes.
 5. All queries are parameterised by `start_date` / `end_date` from the UI date picker.
 6. Wildcard table filter uses `_TABLE_SUFFIX BETWEEN 'YYYYMMDD' AND 'YYYYMMDD'` — this naturally excludes `events_intraday_*` tables because their suffix starts with `i` (ASCII 105 > `9` ASCII 57).
+
+<img width="1375" height="906" alt="image" src="https://github.com/user-attachments/assets/f5b3051a-3602-4472-91b3-0a76eb9d0690" />
 
 ---
 
@@ -100,6 +113,8 @@ event in GA4 (instrumentation gap — P0 to add).
 
 Workers auto-retry ~5× before recording a `worker_fail` event. Failures here are
 **post-retry final failures** — they represent real data sync loss.
+
+<img width="1365" height="846" alt="image" src="https://github.com/user-attachments/assets/67fae386-bb60-47e0-a217-20f7fc7e2835" />
 
 ### Not yet instrumented (coverage gaps)
 
