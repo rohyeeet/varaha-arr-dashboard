@@ -37,16 +37,21 @@ st.markdown("""
 # ── BigQuery client ───────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Connecting to BigQuery…")
 def get_client():
-    try:
-        # Streamlit Cloud: credentials stored in st.secrets
+    # On Streamlit Cloud, secrets.toml is injected by the platform.
+    # Locally, fall back to gcloud Application Default Credentials.
+    if "gcp_service_account" in st.secrets:
         from google.oauth2.service_account import Credentials
+        info = dict(st.secrets["gcp_service_account"])
+        # TOML stores \n as literal \\n — restore real newlines in the key
+        if "\\n" in info.get("private_key", ""):
+            info["private_key"] = info["private_key"].replace("\\n", "\n")
         creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"],
+            info,
             scopes=["https://www.googleapis.com/auth/cloud-platform"],
         )
         return bigquery.Client(credentials=creds, project=PROJECT)
-    except Exception:
-        # Local dev: use gcloud Application Default Credentials
+    else:
+        # Local dev: uses active `gcloud auth application-default login` session
         creds, _ = google.auth.default(
             scopes=["https://www.googleapis.com/auth/cloud-platform"]
         )
