@@ -114,6 +114,7 @@ def load_quarterly():
 
     FROM `{PROJECT}.analytics_445901335.events_*`
     WHERE _TABLE_SUFFIX >= '20250409'
+      AND REGEXP_CONTAINS(_TABLE_SUFFIX, r'^\d{{8}}$')
     GROUP BY quarter
     ORDER BY quarter
     """
@@ -147,6 +148,7 @@ def load_crashes():
       COUNT(DISTINCT installation_uuid) AS devices
     FROM `{PROJECT}.firebase_crashlytics.com_varaha_arrapp_ANDROID`
     WHERE _TABLE_SUFFIX >= '20250409'
+      AND REGEXP_CONTAINS(_TABLE_SUFFIX, r'^\d{{8}}$')
     GROUP BY quarter, category
     ORDER BY quarter, crashes DESC
     """
